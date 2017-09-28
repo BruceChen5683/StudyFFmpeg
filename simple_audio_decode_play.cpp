@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
         return -1;  
     }  
     // Dump valid information onto standard error  
-    av_dump_format(pFormatCtx, 0, url, false); //print video/audio info
+//    av_dump_format(pFormatCtx, 0, url, false); //print video/audio info
  
   
     // Find the first audio stream  
@@ -226,7 +226,7 @@ printf("**************************************\n");
     //pCodec=avcodec_find_decoder(pCodecCtx->codec_id);
 
     //video 
-    pCodec=avcodec_find_decoder(pCodecCtx->codec);    
+    pCodec=avcodec_find_decoder(pCodecCtx->codec_id);    
     if(pCodec==NULL){  
         printf("Codec not found.\n");  
         return -1;  
@@ -239,6 +239,7 @@ printf("**************************************\n");
     }  
 
     printf("avcodecCtx channels%dx%d\n",pCodecCtx->width,pCodecCtx->height);
+    printf("avcodecCtx channels  %s;  %s;  %d; %d;\n",pCodecCtx->codec->name,pCodecCtx->codec->long_name,pCodecCtx->codec->type,pCodecCtx->codec->id);
 
 //return -1;
 
@@ -250,8 +251,9 @@ printf("**************************************\n");
 	h264File=fopen("test.h264","wb");
 #endif  
 
-/*    packet=(AVPacket *)av_malloc(sizeof(AVPacket));  
+    packet=(AVPacket *)av_malloc(sizeof(AVPacket));  
     av_init_packet(packet);  
+/*
   
     //Out Audio Param  
     uint64_t out_channel_layout=AV_CH_LAYOUT_STEREO;  
@@ -299,14 +301,19 @@ printf("**************************************\n");
   
     //Play  
     SDL_PauseAudio(0);  */
-  
+//  printf("before while  %d\n",pFormatCtx->internal->packet_buffer);
+
+
+
     while(av_read_frame(pFormatCtx, packet)>=0){  
-        if(packet->stream_index==audioStream){  
+printf("-------------in while\n");
+        if(packet->stream_index==videoStream){  
+	
+printf("-------------%d",packet->size);
+	//fprintf(h264File,"%s\n",packet);
+	fwrite(packet->data,1,packet->size,h264File);
 
-//	fprintf(h264File,"%s\n",packet);
-	//fwrite(packet->data,1,packet->size,h264File);
-
-            ret = avcodec_decode_audio4( pCodecCtx, pFrame,&got_picture, packet);  
+   /*         ret = avcodec_decode_audio4( pCodecCtx, pFrame,&got_picture, packet);  
             if ( ret < 0 ) {  
                 printf("Error in decoding audio frame.\n");  
                 return -1;  
@@ -335,11 +342,12 @@ printf("**************************************\n");
             audio_len =out_buffer_size;  
             audio_pos = audio_chunk;  
   
-#endif  
+#endif  */
         }  
         av_free_packet(packet);  
     }  
-  
+  printf("after while");
+
     swr_free(&au_convert_ctx);  
   
 #if USE_SDL  
