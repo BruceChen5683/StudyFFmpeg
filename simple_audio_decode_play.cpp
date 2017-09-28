@@ -223,7 +223,10 @@ printf("**************************************\n");
     pCodecCtx=pFormatCtx->streams[videoStream]->codec;  
   
     // Find the decoder for the audio stream  
-    pCodec=avcodec_find_decoder(pCodecCtx->codec_id);  
+    //pCodec=avcodec_find_decoder(pCodecCtx->codec_id);
+
+    //video 
+    pCodec=avcodec_find_decoder(pCodecCtx->codec);    
     if(pCodec==NULL){  
         printf("Codec not found.\n");  
         return -1;  
@@ -237,7 +240,7 @@ printf("**************************************\n");
 
     printf("avcodecCtx channels%dx%d\n",pCodecCtx->width,pCodecCtx->height);
 
-return -1;
+//return -1;
 
 //    printf("avcodecCtx channels%d",pCodecCtx->sample_rate);//ONLY AUDIO DATA
   
@@ -247,7 +250,7 @@ return -1;
 	h264File=fopen("test.h264","wb");
 #endif  
 
-    packet=(AVPacket *)av_malloc(sizeof(AVPacket));  
+/*    packet=(AVPacket *)av_malloc(sizeof(AVPacket));  
     av_init_packet(packet);  
   
     //Out Audio Param  
@@ -283,6 +286,7 @@ return -1;
         return -1;   
     }   
 #endif  
+
   
     //FIX:Some Codec's Context Information is missing  
     in_channel_layout=av_get_default_channel_layout(pCodecCtx->channels);  
@@ -294,7 +298,7 @@ return -1;
     swr_init(au_convert_ctx);  
   
     //Play  
-    SDL_PauseAudio(0);  
+    SDL_PauseAudio(0);  */
   
     while(av_read_frame(pFormatCtx, packet)>=0){  
         if(packet->stream_index==audioStream){  
