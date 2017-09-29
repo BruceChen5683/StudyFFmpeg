@@ -220,7 +220,7 @@ printf("**************************************\n");
 
   
     // Get a pointer to the codec context for the audio stream  
-    pCodecCtx=pFormatCtx->streams[videoStream]->codec;  
+    pCodecCtx=pFormatCtx->streams[audioStream]->codec;  
   
     // Find the decoder for the audio stream  
     //pCodec=avcodec_find_decoder(pCodecCtx->codec_id);
@@ -238,12 +238,15 @@ printf("**************************************\n");
         return -1;  
     }  
 
-    printf("avcodecCtx channels%dx%d\n",pCodecCtx->width,pCodecCtx->height);
-    printf("avcodecCtx channels  %s;  %s;  %d; %d;\n",pCodecCtx->codec->name,pCodecCtx->codec->long_name,pCodecCtx->codec->type,pCodecCtx->codec->id);
+    /*printf("avcodecCtx channels%dx%d\n",pCodecCtx->width,pCodecCtx->height);
+    printf("avcodecCtx channels  %s;  %s;  %d; %d;\n",pCodecCtx->codec->name,pCodecCtx->codec->long_name,pCodecCtx->codec->type,pCodecCtx->codec->id);*/
 
 //return -1;
 
-//    printf("avcodecCtx channels%d",pCodecCtx->sample_rate);//ONLY AUDIO DATA
+    printf("avcodecCtx sample_rate   %d\n",pCodecCtx->sample_rate);//ONLY AUDIO DATA
+    printf("avcodecCtx channels   %d\n",pCodecCtx->channels);//ONLY AUDIO DATA
+    printf("avcodecCtx sample_fmt   %d\n",pCodecCtx->sample_fmt);//ONLY AUDIO DATA
+printf("end.........\n");
   
       
 #if OUTPUT_PCM  
@@ -253,7 +256,7 @@ printf("**************************************\n");
 
     packet=(AVPacket *)av_malloc(sizeof(AVPacket));  
     av_init_packet(packet);  
-/*
+
   
     //Out Audio Param  
     uint64_t out_channel_layout=AV_CH_LAYOUT_STEREO;  
@@ -300,20 +303,20 @@ printf("**************************************\n");
     swr_init(au_convert_ctx);  
   
     //Play  
-    SDL_PauseAudio(0);  */
+    SDL_PauseAudio(0);  
 //  printf("before while  %d\n",pFormatCtx->internal->packet_buffer);
 
 
 
     while(av_read_frame(pFormatCtx, packet)>=0){  
 printf("-------------in while\n");
-        if(packet->stream_index==videoStream){  
+        if(packet->stream_index==audioStream){  
 	
 printf("-------------%d",packet->size);
 	//fprintf(h264File,"%s\n",packet);
-	fwrite(packet->data,1,packet->size,h264File);
+//	fwrite(packet->data,1,packet->size,h264File);
 
-   /*         ret = avcodec_decode_audio4( pCodecCtx, pFrame,&got_picture, packet);  
+            ret = avcodec_decode_audio4( pCodecCtx, pFrame,&got_picture, packet);  
             if ( ret < 0 ) {  
                 printf("Error in decoding audio frame.\n");  
                 return -1;  
@@ -327,6 +330,7 @@ printf("-------------%d",packet->size);
   
 #if OUTPUT_PCM  
                 //Write PCM  
+		printf("will wirte info to PCM\n");
                 fwrite(out_buffer, 1, out_buffer_size, pFile);  
 #endif  
                 index++;  
@@ -342,7 +346,7 @@ printf("-------------%d",packet->size);
             audio_len =out_buffer_size;  
             audio_pos = audio_chunk;  
   
-#endif  */
+#endif  
         }  
         av_free_packet(packet);  
     }  
